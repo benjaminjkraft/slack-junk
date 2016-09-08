@@ -14,46 +14,28 @@
 
 import itertools
 import time
-import requests
 import sys
 
 # Token from https://api.slack.com/web, put as secrets.TOKEN = 'xoxp-...'
-import secrets
-
-
-class SlackNotOkayException(Exception):
-    pass
-
-
-def call_api(call, data):
-    data['token'] = secrets.TOKEN
-    res = requests.post('https://slack.com/api/' + call, data).json()
-    if res.get('ok'):
-        return res
-    else:
-        raise SlackNotOkayException(res.get('error', str(res)))
+import util
 
 
 def do_animation(channel, frames, delay=1, delete=False):
     frames = itertools.cycle(frames)
-    resp = call_api('chat.postMessage', {
-        'channel': channel,
-        'text': next(frames),
-        'as_user': 'true',
-    })
+    resp = util.send_as_user(channel, next(frames))
     ts = resp['ts']
     channel = resp['channel']
     try:
         for frame in frames:
             time.sleep(delay)
-            resp = call_api('chat.update', {
+            resp = util.call_api('chat.update', {
                 'ts': ts,
                 'channel': channel,
                 'text': frame,
             })
     finally:
         if delete:
-            call_api('chat.delete', {
+            util.call_api('chat.delete', {
                 'ts': ts,
                 'channel': channel,
             })
