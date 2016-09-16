@@ -21,7 +21,7 @@ def get_message_parts():
     try:
         while True:
             part = raw_input()
-            if not part:
+            if not part or part.strip() == '.':
                 break
             message_parts.append(part)
     except EOFError:
