@@ -7,7 +7,8 @@ class SlackNotOkayException(Exception):
     pass
 
 
-def call_api(call, data):
+def call_api(call, data=None):
+    data = data or {}
     data['token'] = secrets.TOKEN
     res = requests.post('https://slack.com/api/' + call, data).json()
     if res.get('ok'):
