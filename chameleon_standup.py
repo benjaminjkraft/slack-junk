@@ -20,7 +20,7 @@ def get_message_parts():
     print INTRO_LINE
     try:
         while True:
-            part = raw_input()
+            part = raw_input(':flag-??: ')
             if not part or part.strip() == '.':
                 break
             message_parts.append(part)
