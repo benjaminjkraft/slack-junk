@@ -1,0 +1,5 @@
+cron:
+- description: sender thing
+  url: /send
+  schedule: every mon,tue,wed,thu,fri 09:00
+  timezone: America/Los_Angeles
