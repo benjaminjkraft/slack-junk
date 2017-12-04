@@ -1,3 +1,5 @@
+import functools
+
 import requests
 
 import secrets
@@ -5,6 +7,19 @@ import secrets
 
 class SlackNotOkayException(Exception):
     pass
+
+
+def memo(func):
+    results = {}
+
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        assert not kwargs, "kwargs not supported by @memo"
+        if args not in results:
+            retval = func(*args)
+            results[args] = retval
+        return results[args]
+    return wrapper
 
 
 def call_api(call, data=None):
