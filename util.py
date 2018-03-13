@@ -32,12 +32,14 @@ def call_api(call, data=None):
         raise SlackNotOkayException(res.get('error', str(res)))
 
 
-def send_as_user(channel_name, text):
-    return call_api('chat.postMessage', {
+def send_as_user(channel_name, text, **kwargs):
+    params = {
         'channel': channel_name,
         'text': text,
         'as_user': 'true',
-    })
+    }
+    params.update(kwargs)
+    return call_api('chat.postMessage', params)
 
 
 def channel_id(channel_name):
