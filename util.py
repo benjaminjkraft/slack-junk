@@ -5,6 +5,11 @@ import requests
 import secrets
 
 
+# Useful KA channel IDs
+BOT_TESTING = 'C090KRE5P'
+DEPLOYS = 'C096UP7D0'
+
+
 class SlackNotOkayException(Exception):
     pass
 
