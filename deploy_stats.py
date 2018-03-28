@@ -47,11 +47,13 @@ def _weekday(date):
     return (date.weekday(), date.strftime('%A'))
 
 
-def _print(desc, n, tot=None):
+def _print(desc, n, tot=None, graph=False):
     print "%s:" % desc,
     print str(n).rjust(20 - len(desc)),
     if tot:
         print ("(%.1f%%)" % (n * 100./tot)).rjust(7),
+    if graph:
+        print "#" * n,
     print
 
 
@@ -66,7 +68,7 @@ def main():
 
     print "Week of:"
     for day, n in _counts(map(_week, dates)):
-        _print("  %s" % day.strftime('%Y-%m-%d'), n)
+        _print("  %s" % day.strftime('%Y-%m-%d'), n, graph=True)
     print
 
     print "Weekdays:"
@@ -74,25 +76,13 @@ def main():
         _print("  %s" % day_name, n, tot)
     print
 
-    print "Percentiles (of weekdays):"
+    print "Deploys/weekday:"
     # TODO(benkraft): Exclude holidays
-    weekdays_by_count = sorted((n, day) for day, n in _counts(dates)
-                               if day.weekday() <= 4)
-    n, day = weekdays_by_count[0]
-    _print("   min (%s)" % day.strftime('%Y-%m-%d'), n)
-    for pctile in (5, 50, 95):
-        i = int(round(pctile / 100. * len(weekdays_by_count)))
-        n, day = weekdays_by_count[i]
-        _print("  %2sth (%s)" % (pctile, day.strftime('%Y-%m-%d')),
-               n)
-    n, day = weekdays_by_count[-1]
-    _print("   max (%s)" % day.strftime('%Y-%m-%d'), n)
-    print
-
-    print "Distribution (of weekdays):"
     weekday_counts = collections.Counter(n for day, n in _counts(dates)
                                          if day.weekday() <= 4)
-    for i in xrange(min(weekday_counts), max(weekday_counts) + 1):
+    min_count = min(weekday_counts)
+    max_count = max(weekday_counts)
+    for i in xrange(min_count, max_count + 1):
         print '%3d' % i, '#' * weekday_counts[i]
 
     print
