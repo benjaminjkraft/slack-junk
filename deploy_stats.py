@@ -47,10 +47,12 @@ def _weekday(date):
     return (date.weekday(), date.strftime('%A'))
 
 
-def _print(desc, n, tot, width=25):
+def _print(desc, n, tot=None):
     print "%s:" % desc,
-    print str(n).rjust(22 - len(desc)),
-    print ("(%.1f%%)" % (n * 100./tot)).rjust(8)
+    print str(n).rjust(20 - len(desc)),
+    if tot:
+        print ("(%.1f%%)" % (n * 100./tot)).rjust(7),
+    print
 
 
 def _counts(iterable):
@@ -61,13 +63,40 @@ def main():
     versions = versions_set_as_default()
     dates = map(_version_to_date, versions)
     tot = len(versions)
+
+    print "Week of:"
     for day, n in _counts(map(_week, dates)):
-        _print("Week of %s" % day.strftime('%Y-%m-%d'), n, tot)
+        _print("  %s" % day.strftime('%Y-%m-%d'), n)
     print
+
+    print "Weekdays:"
     for (_, day_name), n in _counts(map(_weekday, dates)):
-        _print("%s" % day_name, n, tot)
+        _print("  %s" % day_name, n, tot)
     print
-    _print("Total", len(versions), tot)
+
+    print "Percentiles (of weekdays):"
+    # TODO(benkraft): Exclude holidays
+    weekdays_by_count = sorted((n, day) for day, n in _counts(dates)
+                               if day.weekday() <= 4)
+    n, day = weekdays_by_count[0]
+    _print("   min (%s)" % day.strftime('%Y-%m-%d'), n)
+    for pctile in (5, 50, 95):
+        i = int(round(pctile / 100. * len(weekdays_by_count)))
+        n, day = weekdays_by_count[i]
+        _print("  %2sth (%s)" % (pctile, day.strftime('%Y-%m-%d')),
+               n)
+    n, day = weekdays_by_count[-1]
+    _print("   max (%s)" % day.strftime('%Y-%m-%d'), n)
+    print
+
+    print "Distribution (of weekdays):"
+    weekday_counts = collections.Counter(n for day, n in _counts(dates)
+                                         if day.weekday() <= 4)
+    for i in xrange(min(weekday_counts), max(weekday_counts) + 1):
+        print '%3d' % i, '#' * weekday_counts[i]
+
+    print
+    _print("Total", tot)
 
 
 if __name__ == '__main__':
