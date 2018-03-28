@@ -35,8 +35,8 @@ def versions_set_as_default():
     return unique_versions
 
 
-def _version_to_date(version):
-    return datetime.datetime.strptime(version[:6], '%y%m%d').date()
+def _version_to_dt(version):
+    return datetime.datetime.strptime(version[:11], '%y%m%d-%H%M')
 
 
 def _week(date):
@@ -63,7 +63,8 @@ def _counts(iterable):
 
 def main():
     versions = versions_set_as_default()
-    dates = map(_version_to_date, versions)
+    dts = map(_version_to_dt, versions)
+    dates = [dt.date() for dt in dts]
     tot = len(versions)
 
     print "Week of:"
@@ -76,6 +77,12 @@ def main():
         _print("  %s" % day_name, n, tot)
     print
 
+    print "Hour (PDT, start time):"
+    hours = [dt.strftime('%H:00') for dt in dts]
+    for hour, n in _counts(hours):
+        _print("  %s" % hour, n, graph=True)
+    print
+
     print "Deploys/weekday:"
     # TODO(benkraft): Exclude holidays
     weekday_counts = collections.Counter(n for day, n in _counts(dates)
@@ -83,7 +90,7 @@ def main():
     min_count = min(weekday_counts)
     max_count = max(weekday_counts)
     for i in xrange(min_count, max_count + 1):
-        print '%3d' % i, '#' * weekday_counts[i]
+        _print("  %2d deploys" % i, weekday_counts[i], graph=True)
 
     print
     _print("Total", tot)
