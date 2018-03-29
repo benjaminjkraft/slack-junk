@@ -93,6 +93,7 @@ def main():
         _print("  %2d deploys" % i, weekday_counts[i], graph=True)
 
     print
+    _print("Today", dates.count(datetime.date.today()))
     _print("Total", tot)
 
 
