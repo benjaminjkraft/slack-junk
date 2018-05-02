@@ -7,6 +7,7 @@ import util
 
 
 START_TIME = datetime.datetime(2018, 1, 1)
+NEW_DEPLOY_TIME = datetime.datetime(2018, 3, 21)
 _MSG_RE = re.compile(
     r'(?:^|\] )Default (?:static-content )?version set to ([^ ]*)')
 
@@ -91,6 +92,18 @@ def main():
     max_count = max(weekday_counts)
     for i in xrange(min_count, max_count + 1):
         _print("  %2d deploys" % i, weekday_counts[i], graph=True)
+
+    print
+    deploys_before = [dt for dt in dts
+                      if dt < NEW_DEPLOY_TIME and dt.weekday() <= 4]
+    before_avg = float(len(deploys_before)) / len(
+        {dt.date() for dt in deploys_before})
+    deploys_after = [dt for dt in dts
+                     if dt >= NEW_DEPLOY_TIME and dt.weekday() <= 4]
+    after_avg = float(len(deploys_after)) / len(
+        {dt.date() for dt in deploys_after})
+    _print("Before", '%.2f' % before_avg)
+    _print("After", '%.2f' % after_avg)
 
     print
     _print("Today", dates.count(datetime.date.today()))
