@@ -1,11 +1,14 @@
 #!/usr/bin/env python2
 import collections
 import datetime
+import re
 
 import util
 
 
 START_TIME = datetime.datetime(2018, 1, 1)
+_MSG_RE = re.compile(
+    r'(?:^|\] )Default (?:static-content )?version set to ([^ ]*)')
 
 
 def get_messages():
@@ -13,12 +16,9 @@ def get_messages():
 
 
 def _extract_version_set(msg):
-    if msg.startswith('Default version set to'):
-        return msg.split()[4]
-    elif msg.startswith('Default static-content version set to'):
-        return msg.split()[5]
-    else:
-        return None
+    m = _MSG_RE.search(msg)
+    if m:
+        return m.group(1)
 
 
 def versions_set_as_default():
