@@ -11,6 +11,7 @@ import secrets
 BOT_TESTING = 'C090KRE5P'
 DEPLOYS = 'C096UP7D0'
 WHATS_HAPPENING = 'C71A7RFLN'
+DEVOPS = 'C8Y4Q1E0J'
 
 
 class SlackNotOkayException(Exception):
