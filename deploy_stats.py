@@ -9,7 +9,7 @@ import util
 START_TIME = datetime.datetime(2018, 1, 1)
 NEW_DEPLOY_TIME = datetime.datetime(2018, 3, 21)
 _MSG_RE = re.compile(
-    r'(?:^|\] )Default (?:static-content )?version set (?:by <@[^>]*> )?to (?:gae-)?([^ ]*)')
+    r'(?:^|\] )Default (?:static-content )?version set (?:by [^ ]* )?to (?:gae-)?([^ ]*)')
 
 
 def get_messages():
