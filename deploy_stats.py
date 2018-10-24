@@ -48,11 +48,15 @@ def _weekday(date):
     return (date.weekday(), date.strftime('%A'))
 
 
+def _quarter(dt_or_date):
+    return '%s Q%s' % (dt_or_date.year, (dt_or_date.month + 2) // 3)
+
+
 def _print(desc, n, tot=None, graph=False):
     print "%s:" % desc,
     print str(n).rjust(20 - len(desc)),
     if tot:
-        print ("(%.1f%%)" % (n * 100./tot)).rjust(7),
+        print ("(%.1f%%)" % (n * 100. / tot)).rjust(7),
     if graph:
         print "#" * n,
     print
@@ -66,6 +70,7 @@ def main():
     versions = versions_set_as_default()
     dts = map(_version_to_dt, versions)
     dates = [dt.date() for dt in dts]
+    weekday_dates = [date for date in dates if date.weekday() <= 4]
     tot = len(versions)
 
     print "Week of:"
@@ -86,24 +91,19 @@ def main():
 
     print "Deploys/weekday:"
     # TODO(benkraft): Exclude holidays
-    weekday_counts = collections.Counter(n for day, n in _counts(dates)
-                                         if day.weekday() <= 4)
+    weekday_counts = collections.Counter(
+        collections.Counter(weekday_dates).values())
     min_count = min(weekday_counts)
     max_count = max(weekday_counts)
     for i in xrange(min_count, max_count + 1):
         _print("  %2d deploys" % i, weekday_counts[i], graph=True)
-
     print
-    deploys_before = [dt for dt in dts
-                      if dt < NEW_DEPLOY_TIME and dt.weekday() <= 4]
-    before_avg = float(len(deploys_before)) / len(
-        {dt.date() for dt in deploys_before})
-    deploys_after = [dt for dt in dts
-                     if dt >= NEW_DEPLOY_TIME and dt.weekday() <= 4]
-    after_avg = float(len(deploys_after)) / len(
-        {dt.date() for dt in deploys_after})
-    _print("Before", '%.2f' % before_avg)
-    _print("After", '%.2f' % after_avg)
+
+    print "Deploys/weekday by quarter:"
+    nums_weekdays = collections.Counter(map(_quarter, set(weekday_dates)))
+    for quarter, n in _counts(map(_quarter, dates)):
+        _print(quarter, "%.1f" % (float(n) / nums_weekdays[quarter]))
+    print
 
     print
     _print("Today", dates.count(datetime.date.today()))
