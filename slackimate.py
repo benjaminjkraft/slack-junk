@@ -16,7 +16,6 @@ import itertools
 import time
 import sys
 
-# Token from https://api.slack.com/web, put as secrets.TOKEN = 'xoxp-...'
 import util
 
 

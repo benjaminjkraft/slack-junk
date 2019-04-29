@@ -4,6 +4,8 @@ import time
 
 import requests
 
+# Token as secrets.TOKEN = 'xoxp-...', from:
+#    https://api.slack.com/custom-integrations/legacy-tokens
 import secrets
 
 
