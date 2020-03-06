@@ -1,12 +1,13 @@
+import collections
 import datetime
 import functools
 import time
 
 import requests
 
-# Token as secrets.TOKEN = 'xoxp-...', from:
+# Token as secret.TOKEN = 'xoxp-...', from:
 #    https://api.slack.com/custom-integrations/legacy-tokens
-import secrets
+import secret
 
 
 # Useful KA channel IDs
@@ -37,7 +38,7 @@ def memo(func):
 
 def call_api(call, data=None):
     data = data or {}
-    data['token'] = secrets.TOKEN
+    data['token'] = secret.TOKEN
     res = requests.post('https://slack.com/api/' + call, data).json()
     if res.get('ok'):
         return res
@@ -89,3 +90,12 @@ def channel_history(channel_id, max_messages=None, latest=None, oldest=0):
         latest = resp['messages'][-1]['ts']
 
     return messages
+
+
+def users_who_reacted(channel_id, message_ts):
+    resp = call_api('reactions.get', {
+        'channel': channel_id,
+        'timestamp': message_ts,
+    })
+    reacts = resp['message']['reactions']
+    return collections.Counter(u for react in reacts for u in react['users'])

@@ -89,5 +89,6 @@ ENV/
 .ropeproject
 
 secrets.py
+secret.py
 messages.txt
 lib/
